@@ -212,7 +212,7 @@ const plugins = [
 ];
 
 export default defineConfig({
-  base: '/',
+  base: '/Pdf-Editor/',
   plugins,
   optimizeDeps: {
     include: ['pdfjs-dist'],
