@@ -1,13 +1,37 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle, Home } from "lucide-react";
-import { useLocation } from "wouter";
+
+const BASE_PATH = import.meta.env.BASE_URL;
+
+function getHomeUrl(): string {
+  const base = BASE_PATH.endsWith("/")
+    ? BASE_PATH
+    : `${BASE_PATH}/`;
+
+  return base;
+}
 
 export default function NotFound() {
-  const [, setLocation] = useLocation();
-
   const handleGoHome = () => {
-    setLocation("/");
+    /**
+     * IMPORTANT:
+     *
+     * Do not use:
+     *
+     *   setLocation("/")
+     *
+     * because "/" means the domain root:
+     *
+     *   https://jaylistisnotavailable.github.io/
+     *
+     * Our application lives at:
+     *
+     *   https://jaylistisnotavailable.github.io/Pdf-Editor/
+     *
+     * Vite's BASE_URL already contains the correct project path.
+     */
+    window.location.assign(getHomeUrl());
   };
 
   return (
@@ -17,11 +41,14 @@ export default function NotFound() {
           <div className="flex justify-center mb-6">
             <div className="relative">
               <div className="absolute inset-0 bg-red-100 rounded-full animate-pulse" />
+
               <AlertCircle className="relative h-16 w-16 text-red-500" />
             </div>
           </div>
 
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">404</h1>
+          <h1 className="text-4xl font-bold text-slate-900 mb-2">
+            404
+          </h1>
 
           <h2 className="text-xl font-semibold text-slate-700 mb-4">
             Page Not Found
