@@ -2,40 +2,62 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ['main'] # Triggers when you push to main
+    branches:
+      - main
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
+          cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Build Frontend Only
-        # We use npx vite build to skip the backend server build step
+      - name: Build frontend
         run: npx vite build
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
+      - name: Create GitHub Pages SPA fallback
+        run: |
+          cp dist/public/index.html dist/public/404.html
 
-      - name: Upload artifact
+      - name: Verify build output
+        run: |
+          echo "===== dist/public ====="
+          find dist/public -maxdepth 2 -type f | sort | head -200
+
+          echo ""
+          echo "===== index.html ====="
+          test -f dist/public/index.html
+
+          echo ""
+          echo "===== 404.html ====="
+          test -f dist/public/404.html
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Your vite.config.ts outputs to dist/public
-          path: 'dist/public'
+          path: dist/public
 
       - name: Deploy to GitHub Pages
         id: deployment
