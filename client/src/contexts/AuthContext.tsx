@@ -103,6 +103,9 @@ export function AuthProvider({
         await supabase.auth.signUp({
           email: email.trim(),
           password,
+          options: {
+            emailRedirectTo: `${window.location.origin}`,
+          },
         });
 
       return {
