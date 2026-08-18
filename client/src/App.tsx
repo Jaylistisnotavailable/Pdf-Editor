@@ -1,3 +1,5 @@
+import Landing from "./pages/Landing"
+
 import { Toaster } from "@/components/ui/sonner";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -59,10 +61,7 @@ function ProtectedRoute({
 }
 
 function Router() {
-  const {
-    user,
-    loading,
-  } = useAuth();
+  const { user, loading} = useAuth();
 
   if (loading) {
     return (
@@ -95,6 +94,15 @@ function Router() {
         </ProtectedRoute>
       </Route>
 
+      <Route path="/">
+        <Landing />
+      </Route>
+
+      {/* 3. 兜底路由：未知路径重定向回介绍页 */}
+      <Route>
+        <Redirect to="/" />
+      </Route>
+      
       <Route path="/">
         <Redirect
           to={
